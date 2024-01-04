@@ -1,0 +1,5 @@
+BootStrap: docker-daemon
+From: ubuntu-22.04-rocm-5.6.1-torch-2.1:latest
+
+%post
+    apt -y update

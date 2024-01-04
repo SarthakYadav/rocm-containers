@@ -1,0 +1,12 @@
+ARG VERSION=5.6.1-complete
+FROM rocm/dev-ubuntu-22.04:${VERSION}
+RUN sed -i 's/htt[p|ps]:\/\/archive.ubuntu.com\/ubuntu\//mirror:\/\/mirrors.ubuntu.com\/mirrors.txt/g' /etc/apt/sources.list
+RUN /bin/bash -c 'apt update && apt install liblapack-dev libopenblas-dev python3-dev curl git unzip build-essential wget libsndfile1-dev sox ffmpeg liblmdb-dev iotop nano vim aria2 tmux htop pigz -y'
+RUN /bin/bash -c 'mkdir -p ~/miniconda3 && curl -o ~/miniconda3/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh'
+RUN /bin/bash -c "bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3 && rm ~/miniconda3/miniconda.sh && ~/miniconda3/bin/conda init bash && ~/miniconda3/bin/conda config --set auto_activate_base false"
+## setting up the env
+RUN /bin/bash -c '~/miniconda3/bin/conda create -n research-env python=3.9 -y'
+RUN /bin/bash -c '~/miniconda3/envs/research-env/bin/pip install numpy scipy scikit-learn pandas wandb tqdm soundfile'
+RUN /bin/bash -c '~/miniconda3/envs/research-env/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.6'
+RUN /bin/bash -c '~/miniconda3/envs/research-env/bin/pip install pytorch-lightning==2.1.2 torchdata webdataset timm==0.9.12'
+RUN /bin/bash -c '~/miniconda3/envs/research-env/bin/pip install absl-py ml-collections einops'
